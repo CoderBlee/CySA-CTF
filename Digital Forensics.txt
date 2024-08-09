@@ -1,0 +1,87 @@
+Digital Forensics is described as the preservation, identification, extraction, and documentation of computer evidence used by the court of law. It is a science of finding evidence from digital media like computers, mobile phones, servers, or networks. It gives the forensic the best techniques and tools to solve complicated digital-related cases. Digital Forensics assists the forensic team analyze, inspect, identify, and preserve the digital evidence residing on various electronic devices.
+
+● Recover, analyze, and preserve computers and related materials in such a manner that it allows the investigation agency to present them as evidence in a court of law.
+
+● Postulate the motive behind the crime and the identity of the main culprit.
+
+● Design procedures at a suspected crime scene and ensure that the digital evidence obtained is not corrupted.
+
+● Identify the evidence and estimate the potential impact of the malicious activity on the victim.
+
+1.Wireshark is the world's foremost and widely-used network protocol analyzer. It lets you see what's occurring on your network at a microscopic level and is a standard across many commercial and non-profit enterprises, government agencies, and educational institutions.
+
+Wireshark allows you to filter the packet log either before the capture starts or during analysis, so you can narrow it down and zero in to what you are looking for in the network trace. For example, you can set a filter to see TCP traffic between two IP addresses. You can set it only to show you the packets sent from one computer. The filters in Wireshark are one of the primary reasons it became the standard tool for packet analysis.
+
+wireshark ‑h
+
+2.Hashing : Digital forensics experts use hashing algorithms such as MD5 and SHA1 to produce hash values of the original files they use in investigations. It ensures that the information is not altered during investigation since various tools and techniques are involved in data examination and evidence collection that can affect the data’s integrity. Another idea why hash values are necessary is that electronic documents are shared with legal professionals and other parties, and it is vital to guarantee that everyone has identical copies of the files.
+
+Hash functions provide a way to map a long string to a shorter fixed-length output string known as hash-value or digest. They were primarily used to compress large sets of data and build hash tables in data structures.
+
+Later on, hash functions such as MD5, SHA-1, SHA-256, SHA-3, and BLAKE2 became essential tools used in cryptography to construct digital signatures, integrity verification, password protection, public-key encryption, and more. Hash functions used in cryptography differ from those used in data structures since non-cryptographic hash functions do not provide any security.
+
+Today, hash functions are applied everywhere in nearly every system. For example, decentralized technologies such as Bitcoin and Ethereum rely upon cryptographic hash functions to secure the entire system, maintain transactions' integrity, and so on. Git version control uses the same approach of hash functions combined with Merkle-Trees to track changes on the code.
+
+Another example of usage of hashing algorithms is digital signatures. Just like hash functions, their application is vast. A digital signature is a mathematical cryptographic method that provides authenticity and integrity to a piece of information. They provide reliability and security to such a scale that digital signatures are considered legally binding in many countries, just like traditional document signatures are. Digital signatures are created using public-key cryptography.
+
+touch file1
+sha256sum file1
+
+3.Network Forensic: While performing network forensic, it is vital to identify, analyze, and preserve digital assets in such a manner that it allows the investigation agency to present them as evidence in a court of law.
+
+The capturing, analysis and backtracking of network packets constitute a considerable part of network forensics. Network packets are sources of network evidence, and together with data from remote network services, form live network evidence sources. On the one hand, some debate that using packets as evidence can be questionable if they are spoofed. On the other hand, network packets can complement firewall logs and network monitoring software exceptionally well and can be considered the ultimate forensic evidence.
+
+Throughout this challenge, you will monitor the traffic and try to identify any illegitimate requests and traffic. You will then learn how to store the data and generate hash functions to ensure the integrity of the information.
+
+4.Interception: One of the simplest filters that can be applied to tcpdump is -i, which is used to specify the network interface name. To list all interfaces, use the -D option.
+
+tcpdump ‑D
+The "any" option will capture traffic in all available interfaces.
+
+To start capturing data, execute the following command:
+
+sudo tcpdump ‑i eth0
+It will be tough to follow all the requests and identify critical components because everything will be printed on the terminal. To write the information in a file, use the -w option followed by a filename. To follow the examples throughout this lab, use the same file names as shown in the command examples.
+
+To stop capturing traffic, press CTRL and C at the same time.
+
+5.TCPdump Timeout: Tcpdump can be executed with a time limit if used with a UNIX command called timeout. The duration can be a positive integer or a floating-point number, followed by an optional unit suffix:
+
+● s - seconds (default)
+
+● m - minutes
+
+● h - hours
+
+● d - days
+
+sudo timeout 20 tcpdump ‑i eth0 ‑w /home/admin/data.pcap
+
+6.Analysis: Files containing traffic data can be considerably large, and tcpdump outputs this information unformatted. Wireshark's graphical user interface makes the process of analyzing those packets much simpler.
+
+wireshark /home/admin/data.pcap
+After running the command, Wireshark will be initialized, and the data that existed on the file will be imported on the dashboard. Now we can use advanced features to filter the information.
+7.Wireshark Analysis: nder the column “Protocol,” we can see all protocols captured on the data.pcap file. It is a great starting point to see what hosts are generating traffic and what data is being exchanged.
+
+
+Telnet is an interesting protocol to investigate since it provides no built-in security measures. Its serious security issues have limited its usefulness in environments where the network cannot be fully trusted. The use of Telnet over the public Internet should be avoided due to the risk of eavesdropping.
+To know more about what types of data are being transmitted through this protocol, we can create a filter query that will show all the packages on port 23 (the port used by Telnet).
+
+tcp.port == 23
+After the packets are filtered, it can be seen that the Telnet traffic is generated from hosts Student and CySA Server.
+
+8.Sensitive information: Sensitive information is data that is required to be protected from being accessed by unauthorized parties. This is done to safeguard the security and the privacy of an individual or organization.
+
+Checking the packets' content shows that information is being transmitted in cleartext. As an example, one of the packets contains the "Ubuntu 20.04.2 LTS" string, which is the version of the operating system used by the student container.To verify if that is indeed the operating system, type the following command:
+
+cat /etc/issue
+Continue to examine other Telnet data packages.
+10.Hash Value: To protect the integrity of the information that we have discovered, we can generate hash values for the digital evidence "data.pcap." The following command is using the MD5 hashing algorithm.
+
+md5sum /home/admin/data.pcap
+Except for md5sum, we can use the shasum command that uses the default SHA1 hashing algorithm. If we want to change the algorithm, we can use -a option "-a, --algorithm 1 (default), 224, 256, 384, 512, 512224, 512256."
+
+shasum /home/admin/data.pcap
+To complete this lab, simply remove the data.pcap file:
+
+sudo rm /home/admin/data.pcap
